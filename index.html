@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GreenBite Organic Café — Where food tastes the way it used to</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Playfair Display & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: {
+              DEFAULT: '#1B4332',
+              dark: '#122E22',
+              light: '#40916C',
+              tint: '#EBF3EE',
+            },
+            cream: {
+              DEFAULT: '#FAF7F0',
+              card: '#F2EDE2',
+            },
+            terracotta: {
+              DEFAULT: '#D97736',
+              light: '#FDECE2',
+              dark: '#B85D22',
+            },
+            charcoal: '#1F2933',
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'Georgia', 'serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #FAF7F0;
+      color: #1F2933;
+    }
+
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAF7F0;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #40916C;
+      border-radius: 999px;
+    }
+
+    /* Toast notification animation */
+    @keyframes slideUpFade {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .toast-enter {
+      animation: slideUpFade 0.3s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased selection:bg-forest selection:text-cream">
+
+  <!-- ===================================================================== -->
+  <!-- TOP ANNOUNCEMENT BAR (LEAFLET / PROMO CODE)                           -->
+  <!-- ===================================================================== -->
+  <div class="bg-forest-dark text-cream text-xs sm:text-sm py-2.5 px-4 text-center font-medium">
+    <span>Grand Opening Special! Use promo code </span>
+    <button onclick="copyPromoCode()" class="inline-flex items-center gap-1.5 bg-terracotta text-white font-bold px-2.5 py-0.5 rounded-md mx-1 hover:bg-terracotta-dark transition cursor-pointer" title="Click to copy code">
+      <span>GREEN15</span>
+      <i class="fa-regular fa-copy text-[11px]"></i>
+    </button>
+    <span> for <strong>15% OFF</strong> your first online or home delivery order!</span>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- STICKY NAVIGATION BAR                                                 -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-40 bg-cream/95 backdrop-blur-md border-b border-forest/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-11 h-11 rounded-2xl bg-forest text-cream flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-seedling text-terracotta text-xl"></i>
+        </div>
+        <div>
+          <span class="font-serif font-bold text-xl sm:text-2xl text-forest tracking-tight block leading-none">GreenBite</span>
+          <span class="text-[11px] font-bold uppercase tracking-widest text-terracotta">Organic Café</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden md:flex items-center gap-8 font-semibold text-sm text-charcoal">
+        <a href="#menu" class="hover:text-forest transition">Menu</a>
+        <a href="#about" class="hover:text-forest transition">About Us</a>
+        <a href="#promo" class="hover:text-forest transition">Offers</a>
+        <a href="#delivery" class="hover:text-forest transition">Delivery &amp; Contact</a>
+      </nav>
+
+      <!-- Right Actions: Cart Drawer Button & Mobile Menu -->
+      <div class="flex items-center gap-3">
+        <button id="openCartBtn" type="button" class="inline-flex items-center gap-2.5 bg-forest hover:bg-forest-light text-cream font-bold text-sm px-4 sm:px-5 py-2.5 sm:py-3 rounded-full shadow-md transition-all active:scale-95 cursor-pointer">
+          <i class="fa-solid fa-basket-shopping text-terracotta"></i>
+          <span class="hidden sm:inline">My Order</span>
+          <span id="cartCountBadge" class="bg-terracotta text-white text-xs font-extrabold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+        </button>
+
+        <!-- Mobile Menu Toggle -->
+        <button id="mobileMenuBtn" type="button" class="md:hidden w-10 h-10 rounded-xl bg-forest-tint text-forest flex items-center justify-center text-lg cursor-pointer" aria-label="Toggle Menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobileNav" class="hidden md:hidden bg-cream border-b border-forest/10 px-6 py-4 space-y-3 font-semibold text-charcoal">
+      <a href="#menu" class="block py-1.5 hover:text-forest mobile-link">Menu</a>
+      <a href="#about" class="block py-1.5 hover:text-forest mobile-link">About Us</a>
+      <a href="#promo" class="block py-1.5 hover:text-forest mobile-link">Offers</a>
+      <a href="#delivery" class="block py-1.5 hover:text-forest mobile-link">Delivery &amp; Contact</a>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- HERO SECTION                                                          -->
+  <!-- ===================================================================== -->
+  <section class="relative overflow-hidden py-14 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8">
+    <!-- Subtle Decorative Blobs -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-forest/5 blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 -left-24 w-80 h-80 rounded-full bg-terracotta/10 blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+      <!-- Left Content (7 Cols) -->
+      <div class="lg:col-span-7 text-center lg:text-left">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-forest-tint border border-forest/15 text-forest text-xs font-bold uppercase tracking-widest mb-6">
+          <i class="fa-solid fa-leaf text-forest-light"></i>
+          <span>100% Certified Organic • Zero Chemicals</span>
+        </div>
+
+        <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-forest leading-tight mb-5">
+          Where food tastes <span class="italic text-terracotta">the way it used to.</span>
+        </h1>
+
+        <p class="text-base sm:text-lg text-charcoal/80 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-8">
+          Welcome to <strong>GreenBite Organic Café</strong>. Founded by Andrés Arrieta on November 13, 2026, we serve farm-to-table organic meals, fresh juices, and artisan natural coffee crafted with zero artificial preservatives.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-10">
+          <a href="#menu" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-forest hover:bg-forest-light text-cream font-bold px-8 py-4 rounded-full shadow-lg transition-all">
+            <i class="fa-solid fa-bag-shopping text-terracotta"></i>
+            <span>Order Online</span>
+          </a>
+          <a href="#menu" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-white hover:bg-forest-tint text-forest border border-forest/20 font-bold px-8 py-4 rounded-full transition-all">
+            <span>Explore Menu</span>
+            <i class="fa-solid fa-arrow-down text-sm"></i>
+          </a>
+        </div>
+
+        <!-- Quick Trust Stats -->
+        <div class="grid grid-cols-3 gap-4 max-w-lg mx-auto lg:mx-0 pt-6 border-t border-forest/10">
+          <div>
+            <p class="font-serif text-2xl sm:text-3xl font-bold text-forest">100%</p>
+            <p class="text-xs font-semibold text-charcoal/70 uppercase tracking-wide">Organic Produce</p>
+          </div>
+          <div>
+            <p class="font-serif text-2xl sm:text-3xl font-bold text-terracotta">0%</p>
+            <p class="text-xs font-semibold text-charcoal/70 uppercase tracking-wide">Artificial Additives</p>
+          </div>
+          <div>
+            <p class="font-serif text-2xl sm:text-3xl font-bold text-forest">30 min</p>
+            <p class="text-xs font-semibold text-charcoal/70 uppercase tracking-wide">Eco Home Delivery</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Visual Card (5 Cols) -->
+      <div class="lg:col-span-5">
+        <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-forest-tint aspect-[4/3] lg:aspect-[4/4.3]">
+          <img
+            src="https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=900&q=80"
+            onerror="this.src='https://placehold.co/800x800/1B4332/FAF7F0?text=GreenBite+Organic+Cafe'"
+            alt="Fresh organic farm-to-table bowl and natural coffee"
+            class="w-full h-full object-cover"
+          />
+          <!-- Floating Badge on Image -->
+          <div class="absolute bottom-4 left-4 right-4 bg-cream/95 backdrop-blur-md rounded-2xl p-4 shadow-lg border border-forest/10 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-terracotta text-white flex items-center justify-center text-lg">
+                <i class="fa-solid fa-tractor"></i>
+              </div>
+              <div>
+                <p class="font-bold text-sm text-forest">Direct From Local Growers</p>
+                <p class="text-xs text-charcoal/70">Harvested fresh every morning</p>
+              </div>
+            </div>
+            <span class="bg-forest-tint text-forest text-xs font-bold px-3 py-1 rounded-full">Eco-Certified</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- WHY GREENBITE? / VALUES SECTION                                       -->
+  <!-- ===================================================================== -->
+  <section id="about" class="py-16 sm:py-20 bg-white border-y border-forest/10 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <span class="text-xs font-bold uppercase tracking-widest text-terracotta">Our Mission &amp; Values</span>
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-forest mt-2 mb-4">Why Choose GreenBite?</h2>
+        <p class="text-charcoal/75 text-sm sm:text-base">
+          Built for health-conscious individuals, busy parents, fitness enthusiasts, and anyone who cares about authentic food and a cleaner planet.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Card 1 -->
+        <div class="bg-cream rounded-3xl p-7 border border-forest/10 hover:shadow-md transition">
+          <div class="w-12 h-12 rounded-2xl bg-forest text-cream flex items-center justify-center text-xl mb-5">
+            <i class="fa-solid fa-seedling text-terracotta"></i>
+          </div>
+          <h3 class="font-serif text-xl font-bold text-forest mb-2">100% Organic &amp; Zero Chemicals</h3>
+          <p class="text-sm text-charcoal/75 leading-relaxed">
+            Every ingredient is grown naturally without synthetic pesticides, artificial colors, or preservatives.
+          </p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="bg-cream rounded-3xl p-7 border border-forest/10 hover:shadow-md transition">
+          <div class="w-12 h-12 rounded-2xl bg-forest text-cream flex items-center justify-center text-xl mb-5">
+            <i class="fa-solid fa-handshake-angle text-terracotta"></i>
+          </div>
+          <h3 class="font-serif text-xl font-bold text-forest mb-2">Local Farmers Support</h3>
+          <p class="text-sm text-charcoal/75 leading-relaxed">
+            We partner directly with regional eco-friendly growers to ensure fair trade and peak harvest freshness.
+          </p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-cream rounded-3xl p-7 border border-forest/10 hover:shadow-md transition">
+          <div class="w-12 h-12 rounded-2xl bg-forest text-cream flex items-center justify-center text-xl mb-5">
+            <i class="fa-solid fa-recycle text-terracotta"></i>
+          </div>
+          <h3 class="font-serif text-xl font-bold text-forest mb-2">Eco-Friendly Packaging</h3>
+          <p class="text-sm text-charcoal/75 leading-relaxed">
+            100% biodegradable, compostable cups and takeaway containers to minimize our environmental footprint.
+          </p>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="bg-cream rounded-3xl p-7 border border-forest/10 hover:shadow-md transition">
+          <div class="w-12 h-12 rounded-2xl bg-forest text-cream flex items-center justify-center text-xl mb-5">
+            <i class="fa-solid fa-bicycle text-terracotta"></i>
+          </div>
+          <h3 class="font-serif text-xl font-bold text-forest mb-2">Fresh Daily Delivery</h3>
+          <p class="text-sm text-charcoal/75 leading-relaxed">
+            Enjoy wholesome meals at our cozy café, order via our website, or get fast carbon-neutral home delivery.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- INTERACTIVE MENU SECTION                                              -->
+  <!-- ===================================================================== -->
+  <section id="menu" class="py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="text-xs font-bold uppercase tracking-widest text-terracotta">Farm-to-Table Selection</span>
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-forest mt-2 mb-4">Our Organic Menu</h2>
+        <p class="text-charcoal/75 text-sm sm:text-base">
+          Select items below to test our live online ordering cart for dine-in pickup or home delivery.
+        </p>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div id="menuFilters" class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 mb-12">
+        <button data-category="all" class="filter-btn active px-5 py-2.5 rounded-full text-sm font-bold bg-forest text-cream shadow-sm transition cursor-pointer">
+          All Items
+        </button>
+        <button data-category="meals" class="filter-btn px-5 py-2.5 rounded-full text-sm font-bold bg-white text-forest border border-forest/15 hover:bg-forest-tint transition cursor-pointer">
+          <i class="fa-solid fa-utensils mr-1.5 text-terracotta"></i>Organic Meals
+        </button>
+        <button data-category="coffee" class="filter-btn px-5 py-2.5 rounded-full text-sm font-bold bg-white text-forest border border-forest/15 hover:bg-forest-tint transition cursor-pointer">
+          <i class="fa-solid fa-mug-hot mr-1.5 text-terracotta"></i>Natural Coffee
+        </button>
+        <button data-category="juices" class="filter-btn px-5 py-2.5 rounded-full text-sm font-bold bg-white text-forest border border-forest/15 hover:bg-forest-tint transition cursor-pointer">
+          <i class="fa-solid fa-blender mr-1.5 text-terracotta"></i>Fresh Juices &amp; Snacks
+        </button>
+      </div>
+
+      <!-- Menu Cards Grid (Populated via JS) -->
+      <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- PROMOTIONAL BANNER (COUPON GREEN15 + EMAIL MARKETING)                 -->
+  <!-- ===================================================================== -->
+  <section id="promo" class="py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto bg-forest text-cream rounded-3xl p-8 sm:p-12 lg:p-14 relative overflow-hidden shadow-xl">
+      <div class="absolute -right-16 -bottom-16 w-72 h-72 rounded-full bg-terracotta/20 blur-2xl pointer-events-none"></div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+        <div class="lg:col-span-7">
+          <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-terracotta text-white text-xs font-bold uppercase tracking-widest mb-4">
+            <i class="fa-solid fa-ticket"></i> Digital Leaflet &amp; Newsletter Offer
+          </span>
+          <h2 class="font-serif text-3xl sm:text-4xl font-bold leading-tight mb-4">
+            Get <span class="text-terracotta">15% OFF</span> Your First Organic Order!
+          </h2>
+          <p class="text-cream/85 text-sm sm:text-base max-w-xl mb-6">
+            Join our healthy community newsletter for weekly farm specials or apply code <strong class="text-white underline decoration-terracotta">GREEN15</strong> right now inside your online shopping basket!
+          </p>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="inline-flex items-center gap-3 bg-white/10 border border-white/20 px-4 py-2.5 rounded-2xl">
+              <span class="text-xs uppercase tracking-wider text-cream/75">Promo Code:</span>
+              <span class="font-mono font-bold text-lg text-terracotta">GREEN15</span>
+              <button onclick="copyPromoCode()" class="text-xs bg-white text-forest font-bold px-3 py-1 rounded-lg hover:bg-cream transition cursor-pointer">
+                Copy
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Newsletter Sign-up Form -->
+        <div class="lg:col-span-5 bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-6">
+          <h3 class="font-serif text-xl font-bold mb-2">Subscribe to Fresh Updates</h3>
+          <p class="text-xs text-cream/80 mb-4">Receive seasonal menus, wellness tips, and exclusive discount coupons.</p>
+          <form id="newsletterForm" class="space-y-3">
+            <input
+              type="email"
+              id="newsletterEmail"
+              required
+              placeholder="Enter your email address..."
+              class="w-full px-4 py-3 rounded-xl bg-white text-charcoal placeholder:text-charcoal/50 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-terracotta"
+            />
+            <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-white font-bold py-3 rounded-xl text-sm shadow-md transition cursor-pointer">
+              Claim My 15% Discount
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- HOME DELIVERY & CONTACT SECTION                                       -->
+  <!-- ===================================================================== -->
+  <section id="delivery" class="py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <!-- Left Info (6 Cols) -->
+      <div class="lg:col-span-6 space-y-6">
+        <span class="text-xs font-bold uppercase tracking-widest text-terracotta">Visit Us or Order From Home</span>
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-forest">
+          Physical Shop &amp; Home Delivery
+        </h2>
+        <p class="text-charcoal/75 text-sm sm:text-base leading-relaxed">
+          Whether you want to relax in our cozy neighborhood café, browse our online menu, or order fresh meals straight to your door, GreenBite makes healthy eating effortless.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <!-- Phone -->
+          <div class="bg-white p-5 rounded-2xl border border-forest/10 flex items-start gap-3.5 shadow-sm">
+            <div class="w-10 h-10 rounded-xl bg-forest-tint text-forest flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-phone"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wider text-charcoal/60">Call for Delivery</p>
+              <p class="font-bold text-forest text-base mt-0.5">300-123-4567</p>
+            </div>
+          </div>
+
+          <!-- Website -->
+          <div class="bg-white p-5 rounded-2xl border border-forest/10 flex items-start gap-3.5 shadow-sm">
+            <div class="w-10 h-10 rounded-xl bg-forest-tint text-forest flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-globe"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wider text-charcoal/60">Official Website</p>
+              <p class="font-bold text-forest text-base mt-0.5">www.greenbitecafe.com</p>
+            </div>
+          </div>
+
+          <!-- Hours -->
+          <div class="bg-white p-5 rounded-2xl border border-forest/10 flex items-start gap-3.5 shadow-sm">
+            <div class="w-10 h-10 rounded-xl bg-forest-tint text-forest flex items-center justify-center shrink-0">
+              <i class="fa-regular fa-clock"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wider text-charcoal/60">Shop Hours</p>
+              <p class="font-bold text-charcoal text-sm mt-0.5">Mon – Sun: 7:00 AM – 8:00 PM</p>
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div class="bg-white p-5 rounded-2xl border border-forest/10 flex items-start gap-3.5 shadow-sm">
+            <div class="w-10 h-10 rounded-xl bg-forest-tint text-forest flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-location-dot"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wider text-charcoal/60">Physical Café</p>
+              <p class="font-bold text-charcoal text-sm mt-0.5">124 Green Valley Ave, Eco District</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Quick Delivery / Contact Form (6 Cols) -->
+      <div class="lg:col-span-6 bg-white rounded-3xl p-7 sm:p-9 border border-forest/15 shadow-sm">
+        <h3 class="font-serif text-2xl font-bold text-forest mb-2">Check Delivery Availability or Message Us</h3>
+        <p class="text-sm text-charcoal/70 mb-6">Want to schedule a family organic meal box or ask about our local farm suppliers? Send us a quick note.</p>
+
+        <form id="contactForm" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-charcoal/70 mb-1.5">Your Name</label>
+              <input type="text" required placeholder="e.g. Sarah Johnson" class="w-full px-4 py-3 rounded-xl bg-cream border border-forest/15 text-sm focus:outline-none focus:border-forest" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-charcoal/70 mb-1.5">Phone or Neighborhood</label>
+              <input type="text" required placeholder="e.g. 300-555-0199" class="w-full px-4 py-3 rounded-xl bg-cream border border-forest/15 text-sm focus:outline-none focus:border-forest" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-charcoal/70 mb-1.5">Service Type</label>
+            <select class="w-full px-4 py-3 rounded-xl bg-cream border border-forest/15 text-sm focus:outline-none focus:border-forest">
+              <option>Home Delivery Inquiry</option>
+              <option>Table Reservation at Café</option>
+              <option>Local Farmer Partnership</option>
+              <option>Catering / Local Fair Event</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-charcoal/70 mb-1.5">Message</label>
+            <textarea rows="3" required placeholder="Tell us how we can help..." class="w-full px-4 py-3 rounded-xl bg-cream border border-forest/15 text-sm focus:outline-none focus:border-forest"></textarea>
+          </div>
+
+          <button type="submit" class="w-full bg-forest hover:bg-forest-light text-cream font-bold py-3.5 rounded-xl text-sm shadow-md transition cursor-pointer">
+            Send Request
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- FOOTER                                                                -->
+  <!-- ===================================================================== -->
+  <footer class="bg-forest-dark text-cream/85 pt-14 pb-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 pb-10 border-b border-white/10">
+      <!-- Brand -->
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-forest-light/20 flex items-center justify-center">
+            <i class="fa-solid fa-seedling text-terracotta text-lg"></i>
+          </div>
+          <span class="font-serif font-bold text-2xl text-cream">GreenBite Organic Café</span>
+        </div>
+        <p class="font-serif italic text-cream/75 text-base mb-3">
+          “Where food tastes the way it used to”
+        </p>
+        <p class="text-xs text-cream/60">
+          Founded November 13, 2026 • Director: Andrés Arrieta
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h4 class="font-bold text-sm uppercase tracking-wider text-terracotta mb-4">Explore</h4>
+        <ul class="space-y-2.5 text-sm">
+          <li><a href="#menu" class="hover:text-white transition">100% Organic Menu</a></li>
+          <li><a href="#about" class="hover:text-white transition">Our Eco-Friendly Mission</a></li>
+          <li><a href="#promo" class="hover:text-white transition">15% Discount Coupon (GREEN15)</a></li>
+          <li><a href="#delivery" class="hover:text-white transition">Home Delivery &amp; Shop Hours</a></li>
+        </ul>
+      </div>
+
+      <!-- Direct Contact -->
+      <div>
+        <h4 class="font-bold text-sm uppercase tracking-wider text-terracotta mb-4">Order &amp; Connect</h4>
+        <ul class="space-y-2.5 text-sm">
+          <li class="flex items-center gap-2.5"><i class="fa-solid fa-globe text-terracotta"></i> www.greenbitecafe.com</li>
+          <li class="flex items-center gap-2.5"><i class="fa-solid fa-phone text-terracotta"></i> 300-123-4567</li>
+          <li class="flex items-center gap-2.5"><i class="fa-solid fa-envelope text-terracotta"></i> hello@greenbitecafe.com</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-cream/60 gap-4">
+      <p>© 2026 GreenBite Organic Café. All rights reserved.</p>
+      <p>Entrepreneurs' Project • 100% Sustainable &amp; Organic</p>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- SLIDE-OVER SHOPPING CART / ONLINE ORDER DRAWER                        -->
+  <!-- ===================================================================== -->
+  <div id="cartOverlay" class="fixed inset-0 bg-charcoal/60 backdrop-blur-xs z-50 hidden opacity-0 transition-opacity duration-300"></div>
+
+  <aside id="cartDrawer" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-cream shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+    <!-- Drawer Header -->
+    <div class="px-6 py-5 bg-forest text-cream flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <i class="fa-solid fa-basket-shopping text-terracotta text-lg"></i>
+        <h3 class="font-serif text-xl font-bold">Your Organic Order</h3>
+      </div>
+      <button id="closeCartBtn" type="button" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-cream cursor-pointer" aria-label="Close Cart">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Fulfillment Mode Toggle (Delivery vs In-Shop Pickup) -->
+    <div class="px-6 py-3 bg-forest-tint border-b border-forest/10 flex items-center justify-between text-xs font-bold">
+      <span class="text-forest uppercase tracking-wider">Order Method:</span>
+      <div class="inline-flex rounded-lg bg-white p-1 border border-forest/15">
+        <button type="button" id="modeDelivery" class="mode-btn px-3 py-1 rounded-md bg-forest text-cream transition cursor-pointer">
+          <i class="fa-solid fa-bicycle mr-1"></i>Home Delivery
+        </button>
+        <button type="button" id="modePickup" class="mode-btn px-3 py-1 rounded-md text-forest transition cursor-pointer">
+          <i class="fa-solid fa-store mr-1"></i>In-Shop
+        </button>
+      </div>
+    </div>
+
+    <!-- Cart Items List -->
+    <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-6 space-y-4">
+      <!-- Populated dynamically by JS -->
+    </div>
+
+    <!-- Cart Footer: Promo Code + Totals + Checkout -->
+    <div class="p-6 bg-white border-t border-forest/10 space-y-4">
+      <!-- Promo Input -->
+      <div class="flex gap-2">
+        <input
+          type="text"
+          id="promoInput"
+          placeholder="Promo code (try GREEN15)"
+          class="flex-1 px-3.5 py-2.5 rounded-xl bg-cream border border-forest/15 text-sm uppercase font-semibold focus:outline-none focus:border-forest"
+        />
+        <button id="applyPromoBtn" type="button" class="px-4 py-2.5 rounded-xl bg-forest-tint hover:bg-forest hover:text-cream text-forest font-bold text-xs uppercase tracking-wider transition cursor-pointer">
+          Apply
+        </button>
+      </div>
+      <p id="promoFeedback" class="text-xs font-semibold hidden"></p>
+
+      <!-- Totals -->
+      <div class="space-y-1.5 text-sm pt-1">
+        <div class="flex justify-between text-charcoal/75">
+          <span>Subtotal</span>
+          <span id="cartSubtotal">$0.00</span>
+        </div>
+        <div id="discountRow" class="flex justify-between text-emerald-700 font-semibold hidden">
+          <span>Discount (GREEN15 - 15%)</span>
+          <span id="cartDiscount">-$0.00</span>
+        </div>
+        <div class="flex justify-between text-base font-bold text-forest pt-2 border-t border-forest/10">
+          <span>Total</span>
+          <span id="cartTotal">$0.00</span>
+        </div>
+      </div>
+
+      <button id="checkoutBtn" type="button" class="w-full bg-terracotta hover:bg-terracotta-dark disabled:opacity-40 disabled:pointer-events-none text-white font-bold py-3.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
+        <span>Complete Online Order</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===================================================================== -->
+  <!-- TOAST NOTIFICATION CONTAINER (NO ALERT() USED)                        -->
+  <!-- ===================================================================== -->
+  <div id="toastContainer" class="fixed bottom-5 left-5 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- ===================================================================== -->
+  <!-- INTERACTIVE JAVASCRIPT                                                -->
+  <!-- ===================================================================== -->
+  <script>
+    // Menu Dataset (100% Organic Meals, Natural Coffee, Fresh Juices & Snacks)
+    const menuItems = [
+      {
+        id: 1,
+        name: 'Harvest Quinoa & Avocado Bowl',
+        category: 'meals',
+        categoryLabel: 'Organic Meals',
+        price: 11.50,
+        badge: '100% Organic',
+        desc: 'Local organic quinoa, Hass avocado, roasted sweet potatoes, baby spinach & lemon-herb dressing.',
+        img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 2,
+        name: 'Artisan Sourdough & Farm Egg Toast',
+        category: 'meals',
+        categoryLabel: 'Organic Meals',
+        price: 9.00,
+        badge: 'Zero Preservatives',
+        desc: 'Stone-ground organic sourdough topped with pasture-raised poached eggs, heirloom tomatoes & microgreens.',
+        img: 'https://images.unsplash.com/photo-1525351484163-7529414342d8?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 3,
+        name: 'Rustic Veggie & Chickpea Wrap',
+        category: 'meals',
+        categoryLabel: 'Organic Meals',
+        price: 10.25,
+        badge: 'Plant-Based',
+        desc: 'Whole-grain wrap filled with spiced organic chickpeas, crunchy carrots, hummus & fresh garden greens.',
+        img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 4,
+        name: 'Shade-Grown Organic Pour-Over',
+        category: 'coffee',
+        categoryLabel: 'Natural Coffee',
+        price: 4.50,
+        badge: 'Single Origin',
+        desc: 'Hand-roasted chemical-free Arabica beans brewed fresh to order with rich notes of cocoa and panela.',
+        img: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 5,
+        name: 'Oat Milk Honey Latte',
+        category: 'coffee',
+        categoryLabel: 'Natural Coffee',
+        price: 5.25,
+        badge: 'Bestseller',
+        desc: 'Double shot of organic espresso blended with creamy organic oat milk and raw local wildflower honey.',
+        img: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 6,
+        name: 'Green Vitality Cold-Pressed Juice',
+        category: 'juices',
+        categoryLabel: 'Fresh Juices & Snacks',
+        price: 5.75,
+        badge: 'No Added Sugar',
+        desc: 'Cold-pressed organic kale, green apple, cucumber, celery, ginger & fresh lime.',
+        img: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 7,
+        name: 'Tropical Sunrise Smoothie',
+        category: 'juices',
+        categoryLabel: 'Fresh Juices & Snacks',
+        price: 6.00,
+        badge: 'Farm Fresh',
+        desc: 'Organic mango, pineapple, banana, chia seeds & coconut water blended to perfection.',
+        img: 'https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 8,
+        name: 'Cacao & Almond Energy Bites',
+        category: 'juices',
+        categoryLabel: 'Fresh Juices & Snacks',
+        price: 4.75,
+        badge: 'Healthy Snack',
+        desc: 'Three organic rolled-oat, raw cacao, almond butter & date bites for clean natural energy.',
+        img: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?auto=format&fit=crop&w=600&q=80'
+      }
+    ];
+
+    // State
+    let cart = [];
+    let discountApplied = false;
+    let currentFilter = 'all';
+
+    // DOM Elements
+    const menuGrid = document.getElementById('menuGrid');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const cartCountBadge = document.getElementById('cartCountBadge');
+    const cartDrawer = document.getElementById('cartDrawer');
+    const cartOverlay = document.getElementById('cartOverlay');
+    const openCartBtn = document.getElementById('openCartBtn');
+    const closeCartBtn = document.getElementById('closeCartBtn');
+    const cartItemsContainer = document.getElementById('cartItemsContainer');
+    const cartSubtotalEl = document.getElementById('cartSubtotal');
+    const cartDiscountEl = document.getElementById('cartDiscount');
+    const discountRow = document.getElementById('discountRow');
+    const cartTotalEl = document.getElementById('cartTotal');
+    const promoInput = document.getElementById('promoInput');
+    const applyPromoBtn = document.getElementById('applyPromoBtn');
+    const promoFeedback = document.getElementById('promoFeedback');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+
+    // Toast Notification Helper
+    function showToast(message, icon = 'fa-circle-check') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast-enter pointer-events-auto bg-forest-dark text-cream px-4 py-3 rounded-2xl shadow-xl border border-white/15 flex items-center gap-3 text-sm font-medium max-w-sm';
+      toast.innerHTML = `
+        <i class="fa-solid ${icon} text-terracotta text-base"></i>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.25s ease';
+        setTimeout(() => toast.remove(), 250);
+      }, 3000);
+    }
+
+    // Copy Promo Code Helper (Using document.execCommand for iframe compatibility)
+    function copyPromoCode() {
+      const tempInput = document.createElement('input');
+      tempInput.value = 'GREEN15';
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+
+      promoInput.value = 'GREEN15';
+      showToast('Code GREEN15 copied! Apply it in your order basket.', 'fa-ticket');
+    }
+
+    // Render Menu Grid
+    function renderMenu(category = 'all') {
+      const filtered = category === 'all'
+        ? menuItems
+        : menuItems.filter(item => item.category === category);
+
+      menuGrid.innerHTML = filtered.map(item => `
+        <article class="bg-white rounded-3xl overflow-hidden border border-forest/10 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group">
+          <div>
+            <div class="relative h-48 overflow-hidden bg-forest-tint">
+              <img
+                src="${item.img}"
+                onerror="this.src='https://placehold.co/600x400/1B4332/FAF7F0?text=${encodeURIComponent(item.name)}'"
+                alt="${item.name}"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <span class="absolute top-3 left-3 bg-cream/95 backdrop-blur-xs text-forest text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-xs">
+                ${item.badge}
+              </span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <h3 class="font-serif text-lg font-bold text-forest leading-snug">${item.name}</h3>
+                <span class="font-bold text-terracotta text-base shrink-0">$${item.price.toFixed(2)}</span>
+              </div>
+              <p class="text-xs text-charcoal/75 leading-relaxed">${item.desc}</p>
+            </div>
+          </div>
+
+          <div class="px-5 pb-5 pt-2">
+            <button
+              type="button"
+              onclick="addToCart(${item.id})"
+              class="w-full py-2.5 px-4 rounded-xl bg-forest-tint hover:bg-forest text-forest hover:text-cream font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <i class="fa-solid fa-plus text-xs"></i>
+              <span>Add to Order</span>
+            </button>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    // Filter Buttons Logic
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => {
+          b.classList.remove('bg-forest', 'text-cream', 'shadow-sm');
+          b.classList.add('bg-white', 'text-forest', 'border', 'border-forest/15');
+        });
+        btn.classList.remove('bg-white', 'text-forest', 'border', 'border-forest/15');
+        btn.classList.add('bg-forest', 'text-cream', 'shadow-sm');
+
+        currentFilter = btn.dataset.category;
+        renderMenu(currentFilter);
+      });
+    });
+
+    // Cart Drawer Open / Close
+    function openCart() {
+      cartOverlay.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        cartOverlay.classList.remove('opacity-0');
+        cartDrawer.classList.remove('translate-x-full');
+      });
+    }
+
+    function closeCart() {
+      cartOverlay.classList.add('opacity-0');
+      cartDrawer.classList.add('translate-x-full');
+      setTimeout(() => {
+        cartOverlay.classList.add('hidden');
+      }, 300);
+    }
+
+    openCartBtn.addEventListener('click', openCart);
+    closeCartBtn.addEventListener('click', closeCart);
+    cartOverlay.addEventListener('click', closeCart);
+
+    // Cart Operations
+    window.addToCart = function(id) {
+      const product = menuItems.find(item => item.id === id);
+      if (!product) return;
+
+      const existing = cart.find(item => item.id === id);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ ...product, qty: 1 });
+      }
+
+      updateCartUI();
+      showToast(`Added "${product.name}" to your order!`);
+    };
+
+    window.changeQty = function(id, delta) {
+      const index = cart.findIndex(item => item.id === id);
+      if (index === -1) return;
+
+      cart[index].qty += delta;
+      if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+      }
+      updateCartUI();
+    };
+
+    function updateCartUI() {
+      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+      cartCountBadge.textContent = totalItems;
+
+      if (cart.length === 0) {
+        cartItemsContainer.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-center py-12 text-charcoal/60">
+            <div class="w-16 h-16 rounded-full bg-forest-tint text-forest flex items-center justify-center text-2xl mb-4">
+              <i class="fa-solid fa-seedling"></i>
+            </div>
+            <p class="font-serif text-lg font-bold text-forest mb-1">Your basket is empty</p>
+            <p class="text-xs max-w-xs">Explore our 100% organic menu and add fresh meals or natural coffee to start your order.</p>
+          </div>
+        `;
+        checkoutBtn.disabled = true;
+      } else {
+        checkoutBtn.disabled = false;
+        cartItemsContainer.innerHTML = cart.map(item => `
+          <div class="bg-white rounded-2xl p-3.5 border border-forest/10 flex items-center gap-3.5 shadow-xs">
+            <img src="${item.img}" alt="${item.name}" class="w-16 h-16 rounded-xl object-cover shrink-0" />
+            <div class="flex-1 min-w-0">
+              <h4 class="font-bold text-sm text-forest truncate">${item.name}</h4>
+              <p class="text-xs font-bold text-terracotta mt-0.5">$${(item.price * item.qty).toFixed(2)}</p>
+              <div class="inline-flex items-center gap-2.5 mt-2 bg-cream px-2.5 py-1 rounded-lg border border-forest/10">
+                <button type="button" onclick="changeQty(${item.id}, -1)" class="text-forest hover:text-terracotta font-bold text-xs cursor-pointer">
+                  <i class="fa-solid fa-minus"></i>
+                </button>
+                <span class="text-xs font-bold text-charcoal w-4 text-center">${item.qty}</span>
+                <button type="button" onclick="changeQty(${item.id}, 1)" class="text-forest hover:text-terracotta font-bold text-xs cursor-pointer">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Calculate Totals
+      const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+      const discount = discountApplied ? subtotal * 0.15 : 0;
+      const total = subtotal - discount;
+
+      cartSubtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+      if (discountApplied && subtotal > 0) {
+        discountRow.classList.remove('hidden');
+        cartDiscountEl.textContent = `-$${discount.toFixed(2)}`;
+      } else {
+        discountRow.classList.add('hidden');
+      }
+      cartTotalEl.textContent = `$${total.toFixed(2)}`;
+    }
+
+    // Apply Promo Code GREEN15
+    applyPromoBtn.addEventListener('click', () => {
+      const code = promoInput.value.trim().toUpperCase();
+      promoFeedback.classList.remove('hidden');
+
+      if (code === 'GREEN15') {
+        discountApplied = true;
+        promoFeedback.textContent = '15% discount code GREEN15 applied!';
+        promoFeedback.className = 'text-xs font-bold text-emerald-700';
+        updateCartUI();
+        showToast('15% discount applied to your order!', 'fa-tag');
+      } else {
+        discountApplied = false;
+        promoFeedback.textContent = 'Invalid code. Try GREEN15 for 15% off.';
+        promoFeedback.className = 'text-xs font-bold text-red-600';
+        updateCartUI();
+      }
+    });
+
+    // Order Mode Toggle (Home Delivery vs In-Shop)
+    const modeDelivery = document.getElementById('modeDelivery');
+    const modePickup = document.getElementById('modePickup');
+    modeDelivery.addEventListener('click', () => {
+      modeDelivery.classList.add('bg-forest', 'text-cream');
+      modeDelivery.classList.remove('text-forest');
+      modePickup.classList.remove('bg-forest', 'text-cream');
+      modePickup.classList.add('text-forest');
+    });
+    modePickup.addEventListener('click', () => {
+      modePickup.classList.add('bg-forest', 'text-cream');
+      modePickup.classList.remove('text-forest');
+      modeDelivery.classList.remove('bg-forest', 'text-cream');
+      modeDelivery.classList.add('text-forest');
+    });
+
+    // Complete Order Demo Action
+    checkoutBtn.addEventListener('click', () => {
+      cart = [];
+      discountApplied = false;
+      promoInput.value = '';
+      promoFeedback.classList.add('hidden');
+      updateCartUI();
+      closeCart();
+      showToast('Order confirmed! Thank you for choosing GreenBite Organic Café.', 'fa-seedling');
+    });
+
+    // Newsletter & Contact Forms
+    document.getElementById('newsletterForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      document.getElementById('newsletterEmail').value = '';
+      showToast('Welcome! Your 15% coupon code is GREEN15.', 'fa-envelope-open-text');
+    });
+
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      e.target.reset();
+      showToast('Message received! Our café team will reply shortly.', 'fa-paper-plane');
+    });
+
+    // Mobile Navigation Toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileNav = document.getElementById('mobileNav');
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileNav.classList.toggle('hidden');
+    });
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => mobileNav.classList.add('hidden'));
+    });
+
+    // Initialize Page
+    renderMenu('all');
+    updateCartUI();
+  </script>
+</body>
+</html>
